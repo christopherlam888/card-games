@@ -5,13 +5,16 @@ from cards import FrenchDeck
 import pyfiglet
 
 class Blackjack:
-    def __init__(self, num) -> None:
+    
+    # default constructor
+    def __init__(self, num):
         self.num_decks = num
         self.deck = FrenchDeck(self.num_decks)
         self.deck.shuffle()
         self.player_score = 1000
         self.basic_score = 1000
 
+    # calculate a hand value
     def hand_value(self, hand):
         value = 0
         soft = 0
@@ -32,21 +35,28 @@ class Blackjack:
             is_soft = True
         return [value, is_soft]
 
-    def print_dealer_hand(self, dealer_hand) -> None:
+    # print the dealer hand
+    def print_dealer_hand(self, dealer_hand):
         print(f"Dealer: {dealer_hand[0].rank} ?")
         print()
 
-    def reveal_dealer_hand(self, dealer_hand) -> None:
+    # reveal the dealer hand
+    def reveal_dealer_hand(self, dealer_hand):
         print("Dealer:", *[card.rank for card in dealer_hand])
         print()
 
-    def print_player_hand(self, num, player_hands) -> None:
+    # print a single player hand
+    def print_player_hand(self, num, player_hands):
         print("Player:", *[card.rank for card in player_hands[num]])
 
-    def print_basic_hand(self, num, basic_hands) -> None:
+    # print a single basic hand
+    def print_basic_hand(self, num, basic_hands):
         print("Basic:", *[card.rank for card in basic_hands[num]])
         
+    # determine a move based on basic strategy
     def basic_move(self, hand, rank):
+        
+        # split
         if len(hand) == 2 and hand[0].rank == hand[1].rank:
             if hand[0].rank in ['2', '3', '6', '7', '9'] and rank in ['2', '3', '4', '5', '6']:
                 return 'sp'
@@ -58,6 +68,8 @@ class Blackjack:
                 return 'sp'
             elif hand[0].rank == 9 and rank in ['8', '9']:
                 return 'sp'
+
+        # soft
         if self.hand_value(hand)[1]:
             if self.hand_value(hand)[0] == 20:
                 return 's'
@@ -66,7 +78,7 @@ class Blackjack:
             elif self.hand_value(hand)[0] == 19 and rank == '6':
                 return 'd'
             elif self.hand_value(hand)[0] == 18 and rank in ['2', '3', '4', '5', '6']:
-                return d
+                return 'd'
             elif self.hand_value(hand)[0] == 18 and rank in ['7', '8']:
                 return 's'
             elif rank in ['5', '6']:
@@ -77,6 +89,8 @@ class Blackjack:
                 return 'd'
             else: 
                 return 'h'
+
+        # hard
         else:
             if self.hand_value(hand)[0] >= 17:
                 return 's'
@@ -93,6 +107,7 @@ class Blackjack:
             else:
                 return 'h'
 
+    # draw a card from the deck for basic
     def basic_draw_card(self, cards_drawn, basic_cards_drawn):
         if len(cards_drawn) != 0:
             return cards_drawn.pop(0)
@@ -101,12 +116,14 @@ class Blackjack:
             basic_cards_drawn.append(card)
             return card
 
-    def play_hand(self) -> None:
+    # play a hand
+    def play_hand(self):
     
         player_hands = []
         basic_hands = []
         dealer_hand = []
     
+        # prompt for bet
         print("Score: ", self.player_score)
         bets = []
         bet = input("Place your bet (5): ")
@@ -117,10 +134,12 @@ class Blackjack:
         basic_bets = [5]
         print()
 
+        # deal starting hands
         player_hands.append([self.deck.draw_card(), self.deck.draw_card()])
         basic_hands.append([player_hands[0][0], player_hands[0][1]])
         dealer_hand = ([self.deck.draw_card(), self.deck.draw_card()])
 
+        # check for blackjack
         if self.hand_value(dealer_hand)[0] == 21 or self.hand_value(player_hands[0])[0] == 21:
             if self.hand_value(dealer_hand)[0] == 21 and self.hand_value(player_hands[0])[0] == 21:
                 self.reveal_dealer_hand(dealer_hand)
@@ -130,8 +149,8 @@ class Blackjack:
                 self.reveal_dealer_hand(dealer_hand)
                 self.print_player_hand(0, player_hands)
                 print("Win")
-                self.player_score += bets[0]
-                self.basic_score += basic_bets[0]
+                self.player_score += bets[0]*1.5
+                self.basic_score += basic_bets[0]*1.5
             else:
                 self.reveal_dealer_hand(dealer_hand)
                 self.print_player_hand(0, player_hands)
@@ -139,10 +158,14 @@ class Blackjack:
                 self.player_score -= bets[0]
                 self.basic_score -= basic_bets[0]
             print()
+
+        # not blackjack
         else: 
             self.print_dealer_hand(dealer_hand)
             cards_drawn = []
             basic_cards_drawn = []
+
+            # player move
             count = 0
             while(count < len(player_hands)):
                 self.print_player_hand(count, player_hands)
@@ -182,6 +205,7 @@ class Blackjack:
                 count += 1
                 print()
 
+            # basic move
             count = 0
             while(count < len(basic_hands)):
                 if self.hand_value(basic_hands[count])[0] < 21:
@@ -194,11 +218,11 @@ class Blackjack:
                             else:
                                 move = ''
                         elif move == 'd':
-                            bets[count] *= 2
+                            basic_bets[count] *= 2
                             basic_hands[count].append(self.basic_draw_card(cards_drawn, basic_cards_drawn))
                             move = ''
                         elif move == 'sp':
-                            bets.append(bets[count])
+                            basic_bets.append(bets[count])
                             basic_hands.append([basic_hands[count].pop(), self.basic_draw_card(cards_drawn, basic_cards_drawn)])
                             basic_hands[count].append(self.basic_draw_card(cards_drawn, basic_cards_drawn))
                             if self.hand_value(basic_hands[count])[0] < 21:
@@ -208,10 +232,12 @@ class Blackjack:
                 count += 1            
             self.deck.cards.extend(basic_cards_drawn)
             
+            # dealer move
             while(self.hand_value(dealer_hand)[0] < 17):
                 dealer_hand.append(self.deck.draw_card())
             self.reveal_dealer_hand(dealer_hand)
 
+            # determine results for each player hand
             for count in range(len(player_hands)):
                 self.print_player_hand(count, player_hands)
                 if self.hand_value(player_hands[count])[0] == self.hand_value(dealer_hand)[0] and self.hand_value(player_hands[count])[0] <= 21:
@@ -224,6 +250,7 @@ class Blackjack:
                     self.player_score -= bets[count]
                 print()
 
+            # determine results for each basic hand
             for count in range(len(basic_hands)):
                 self.print_basic_hand(count, basic_hands)
                 if self.hand_value(basic_hands[count])[0] == self.hand_value(dealer_hand)[0] and self.hand_value(basic_hands[count])[0] <= 21:
@@ -236,15 +263,18 @@ class Blackjack:
                     self.basic_score -= basic_bets[count]
                 print()
         
+        # print scores
         print("Player Score: ", self.player_score)
         print("Basic Score: ", self.basic_score)
         print()
 
-    def play(self) -> None:
+    # play the game
+    def play(self):
         print(pyfiglet.figlet_format("Blackjack"))
         while(input("Play hand? (y/N) ").lower() == 'y'):
             print()
             self.play_hand()
+            # new deck if less than one deck's number of cards remain
             if len(self.deck.cards) < 52:
                 self.deck = FrenchDeck(self.num_decks)
 
