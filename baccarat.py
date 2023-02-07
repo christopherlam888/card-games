@@ -53,7 +53,6 @@ class Baccarat:
                 print("Win")
             else:
                 print("Tie")
-            self.strategy_score -= strategy_bet[0]
         elif self.hand_value(player_hand) > self.hand_value(banker_hand):
             if bet[1] == 'p':
                 self.player_score += bet[0]
