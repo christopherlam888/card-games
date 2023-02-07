@@ -17,7 +17,7 @@ Games:
 - Baccarat
   - Choose the number of decks
   - Make bets in increments of 5
-  - Make bets on the player, banker, or tie
+  - Make bets on the Player, Banker, or Tie
   - Track your score over time
   - Compare your results to always betting on banker (default bet 5)
 
@@ -25,6 +25,7 @@ Games:
 
 Features to implement:
 - War
+- Testing
 
 ***
 
