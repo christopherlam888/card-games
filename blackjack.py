@@ -54,10 +54,10 @@ class Blackjack:
         print("Basic:", *[card.rank for card in basic_hands[num]])
         
     # determine a move based on basic strategy
-    def basic_move(self, hand, rank):
+    def basic_move(self, hand, basic_hands, rank):
         
         # split
-        if len(hand) == 2 and hand[0].rank == hand[1].rank:
+        if len(basic_hands) <= 3 and len(hand) == 2 and hand[0].rank == hand[1].rank:
             if hand[0].rank in ['2', '3', '6', '7', '9'] and rank in ['2', '3', '4', '5', '6']:
                 return 'sp'
             elif hand[0].rank == 4 and rank in ['5', '6']:
@@ -76,17 +76,32 @@ class Blackjack:
             elif self.hand_value(hand)[0] == 19 and rank != '6':
                 return 's'
             elif self.hand_value(hand)[0] == 19 and rank == '6':
-                return 'd'
+                if len(hand) == 2:
+                    return 'd'
+                else:
+                    return 'h'
             elif self.hand_value(hand)[0] == 18 and rank in ['2', '3', '4', '5', '6']:
-                return 'd'
+                if len(hand) == 2:
+                    return 'd'
+                else:
+                    return 'h'
             elif self.hand_value(hand)[0] == 18 and rank in ['7', '8']:
                 return 's'
             elif rank in ['5', '6']:
-                return 'd'
+                if len(hand) == 2:
+                    return 'd'
+                else:
+                    return 'h'
             elif self.hand_value(hand)[0] >= 15 and rank in ['4']:
-                return 'd'
+                if len(hand) == 2:
+                    return 'd'
+                else:
+                    return 'h'
             elif self.hand_value(hand)[0] == 17 and rank in ['3']:
-                return 'd'
+                if len(hand) == 2:
+                    return 'd'
+                else:
+                    return 'h'
             else: 
                 return 'h'
 
@@ -99,11 +114,20 @@ class Blackjack:
             elif self.hand_value(hand)[0] == 12 and rank in ['4', '5', '6']:
                 return 's'
             elif self.hand_value(hand)[0] in [10, 11] and rank in ['2', '3', '4', '5', '6', '7', '8', '9']:
-                return 'd'
+                if len(hand) == 2:
+                    return 'd'
+                else:
+                    return 'h'
             elif self.hand_value(hand)[0] == 11 and rank in ['10', 'J', 'Q', 'K', 'A']:
-                return 'd'
+                if len(hand) == 2:
+                    return 'd'
+                else:
+                    return 'h'
             elif self.hand_value(hand)[0] == 9 and rank in ['3', '4', '5', '6']:
-                return 'd'
+                if len(hand) == 2:
+                    return 'd'
+                else:
+                    return 'h'
             else:
                 return 'h'
 
@@ -209,12 +233,12 @@ class Blackjack:
             count = 0
             while(count < len(basic_hands)):
                 if self.hand_value(basic_hands[count])[0] < 21:
-                    move = self.basic_move(basic_hands[count], dealer_hand[0].rank)
+                    move = self.basic_move(basic_hands[count], basic_hands, dealer_hand[0].rank)
                     while(move in ['h', 'd', 'sp']): 
                         if move == 'h':
                             basic_hands[count].append(self.basic_draw_card(cards_drawn, basic_cards_drawn))
                             if self.hand_value(basic_hands[count])[0] < 21:
-                                move = self.basic_move(basic_hands[count], dealer_hand[0].rank)
+                                move = self.basic_move(basic_hands[count], basic_hands, dealer_hand[0].rank)
                             else:
                                 move = ''
                         elif move == 'd':
@@ -226,7 +250,7 @@ class Blackjack:
                             basic_hands.append([basic_hands[count].pop(), self.basic_draw_card(cards_drawn, basic_cards_drawn)])
                             basic_hands[count].append(self.basic_draw_card(cards_drawn, basic_cards_drawn))
                             if self.hand_value(basic_hands[count])[0] < 21:
-                                move = self.basic_move(basic_hands[count], dealer_hand[0].rank)
+                                move = self.basic_move(basic_hands[count], basic_hands, dealer_hand[0].rank)
                             else:
                                 move = ''
                 count += 1            
