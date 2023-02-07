@@ -13,7 +13,8 @@ Games:
   - Hit, Stand, Double, Split
   - Track your score over time
   - Compare your results to basic strategy (default bet 5)
- - Baccarat
+
+- Baccarat
   - Choose the number of decks
   - Make bets in increments of 5
   - Make bets on the player, banker, or tie
