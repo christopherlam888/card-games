@@ -40,7 +40,7 @@ Install requirements:
 
 ## Usage
 
-Run Card Games with the command `python3 card-games.py`.
+Run Card Games with the command `python3 card_games.py`.
 
 ## Screenshots
 
