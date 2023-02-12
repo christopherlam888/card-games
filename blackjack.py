@@ -306,7 +306,7 @@ class Blackjack:
                             )
                             move = ""
                         elif move == "sp":
-                            basic_bets.append(bets[count])
+                            basic_bets.append(bets[0])
                             basic_hands.append(
                                 [
                                     basic_hands[count].pop(),
